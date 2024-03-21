@@ -1,11 +1,17 @@
 #!/bin/bash
 
-# Pull the latest Docker image from the registry
-docker pull umitciftci/my-webapp:${BUILD_NUMBER}
+# Konteyneri başlatmak ve durdurmak için deploy.sh betiği
 
-# Stop and remove existing containers
-docker stop my-webapp-container || true && docker rm my-webapp-container || true
+# Değişkenler
+CONTAINER_NAME="my-webapp-container"
+IMAGE_NAME="my-webapp-image"
+TAG="latest"
+PORT_MAPPING="8081:80"
 
-# Run a new container with the updated image
-docker run -d -p 80:80 --name my-webapp-container umitciftci/my-webapp:${BUILD_NUMBER}
+# Eski konteyneri durdurma
+docker stop $CONTAINER_NAME || true
+docker rm $CONTAINER_NAME || true
+
+# Yeni konteyneri başlatma
+docker run -d --name $CONTAINER_NAME -p $PORT_MAPPING $IMAGE_NAME:$TAG
 

@@ -1,0 +1,18 @@
+pipeline {
+    agent any
+    stages {
+        stage('Deploy') {
+            steps {
+                script {
+                    docker.withRegistry('https://registry.example.com', 'credentials-id') {
+                        docker.image('my-webapp-image:latest').pull()
+                    }
+                    sh 'docker stop my-webapp-container || true'
+                    sh 'docker rm my-webapp-container || true'
+                    sh 'docker run -d --name my-webapp-container -p 8080:80 my-webapp-image:latest'
+                }
+            }
+        }
+    }
+}
+
