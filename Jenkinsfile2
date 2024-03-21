@@ -4,7 +4,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    docker.withRegistry('https://registry.example.com', 'credentials-id') {
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-creds') {
                         docker.image('my-webapp-image:latest').pull()
                     }
                     sh 'docker stop my-webapp-container || true'
