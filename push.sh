@@ -1,14 +1,10 @@
 #!/bin/bash
 
-# Docker görüntüsünü yüklemek için push.sh betiği
-
 # Değişkenler
-DOCKER_REGISTRY"https://registry.example.com"
-CREDENTIALS_ID="dockerhub-credentials"
-DOCKER_IMAGE_NAME="my-webapp-image"
+DOCKER_REGISTRY="docker.io/umitciftci"
+IMAGE_NAME="my-webapp-image"
 TAG="latest"
 
-# Docker görüntüsünün yüklenmesi
-docker login -u username -p password $DOCKER_REGISTRY  # Docker registry'ye giriş yapılması
-docker push $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$TAG   # Docker görüntüsünün yüklenmesi
+# Docker görüntüsünü Docker Hub'a gönderme
+docker push $DOCKER_REGISTRY/$IMAGE_NAME:$TAG
 

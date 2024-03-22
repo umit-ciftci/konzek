@@ -1,17 +1,15 @@
 #!/bin/bash
 
-# Konteyneri başlatmak ve durdurmak için deploy.sh betiği
-
 # Değişkenler
-CONTAINER_NAME="my-webapp-container"
+DOCKER_REGISTRY="docker.io/umitciftci"
 IMAGE_NAME="my-webapp-image"
-TAG="latest"
-PORT_MAPPING="8081:80"
+CONTAINER_NAME="my-webapp-container"
 
-# Eski konteyneri durdurma
+# Docker konteynerini durdurma ve kaldırma
 docker stop $CONTAINER_NAME || true
 docker rm $CONTAINER_NAME || true
 
-# Yeni konteyneri başlatma
-docker run -d --name $CONTAINER_NAME -p $PORT_MAPPING $IMAGE_NAME:$TAG
+# Yeni bir konteyner başlatma
+docker run -d -p 8080:80 --name $CONTAINER_NAME $DOCKER_REGISTRY/$IMAGE_NAME:latest
+
 
