@@ -1,17 +1,45 @@
 pipeline {
     agent any
+    
+    environment {
+        DOCKER_REGISTRY = "docker.io/umitciftci"
+        IMAGE_NAME = "my-webapp-image"
+        CONTAINER_NAME = "my-webapp-container"
+    }
+
     stages {
-        stage('Deploy') {
+        stage('Pull latest Docker image') {
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'umitciftci-dockerhub') {
-                        docker.image('my-webapp-image:latest').pull()
-                    }
-                    sh 'docker stop my-webapp-container || true'
-                    sh 'docker rm my-webapp-container || true'
-                    sh 'docker run -d --name my-webapp-container -p 8080:80 my-webapp-image:latest'
+                    docker.pull("${DOCKER_REGISTRY}/${IMAGE_NAME}:${env.BUILD_NUMBER}")
                 }
             }
+        }
+
+        stage('Stop and remove existing containers') {
+            steps {
+                script {
+                    sh "docker stop ${CONTAINER_NAME} || true"
+                    sh "docker rm ${CONTAINER_NAME} || true"
+                }
+            }
+        }
+
+        stage('Run a new container with the updated image') {
+            steps {
+                script {
+                    docker.run("-d -p 8080:80 --name ${CONTAINER_NAME} ${DOCKER_REGISTRY}/${IMAGE_NAME}:${env.BUILD_NUMBER}")
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'CD Pipeline succeeded! Dockerized application deployed.'
+        }
+        failure {
+            echo 'CD Pipeline failed!'
         }
     }
 }

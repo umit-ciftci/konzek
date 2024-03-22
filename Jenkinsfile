@@ -2,34 +2,43 @@ pipeline {
     agent any
     
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('umitciftci-dockerhub')
+        DOCKER_REGISTRY = "docker.io/umitciftci"
+        IMAGE_NAME = "my-webapp-image"
+        GIT_REPO = "https://github.com/umit-ciftci/konzek.git"
     }
 
     stages {
-        stage('Docker Login') {
+        stage('Clone repository') {
             steps {
-                echo 'Logon in to Docker Hub'
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
-                    sh 'echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin'
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: "${GIT_REPO}"]]])
+            }
+        }
+
+        stage('Build Docker image') {
+            steps {
+                script {
+                    docker.build("${DOCKER_REGISTRY}/${IMAGE_NAME}:${env.BUILD_NUMBER}")
                 }
-                echo 'Login Successful'
             }
         }
 
-        stage('Docker Build') {
+        stage('Push Docker image to Docker Hub') {
             steps {
-                echo 'Building Docker Image'
-                sh 'docker build -t umitciftci/my-webapp-image:$BUILD_NUMBER .'
-                echo 'Docker Image built'
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-cred') {
+                        docker.image("${DOCKER_REGISTRY}/${IMAGE_NAME}:${env.BUILD_NUMBER}").push()
+                    }
+                }
             }
         }
+    }
 
-        stage('Docker Push') {
-            steps {
-                echo 'Pushing Image to Docker Hub'
-                sh 'docker push umitciftci/my-webapp-image:$BUILD_NUMBER'
-                echo 'Image pushed to Docker Hub'
-            }
+    post {
+        success {
+            echo 'Pipeline succeeded! Docker image has been pushed to Docker Hub.'
+        }
+        failure {
+            echo 'Pipeline failed!'
         }
     }
 }
