@@ -26,6 +26,30 @@ sudo yum install docker -y
 sudo systemctl start docker
 sudo systemctl enable docker
  ```
+#### Dockerfile Kullanımı
+Bu proje, bir Nginx web sunucusunu Docker konteynerinde çalıştırmak için bir Docker dosyası içerir. Docker dosyası, bir Nginx temel görüntüsünü (nginx:alpine) kullanarak bir web sunucusunu yapılandırmak için adımları içerir.
+
+###### Dockerfile Açıklaması
+Docker dosyası (Dockerfile) aşağıdaki adımları içerir:
+
+Nginx Temel Görüntüsü Seçimi: Docker dosyası, Nginx'in Alpine Linux tabanlı hafif bir görüntüsünü (nginx:alpine) kullanır. Bu, Docker konteynerinin boyutunu minimize etmeye ve verimliliği artırmaya yardımcı olur.
+
+HTML Dosyasının Kopyalanması:  Docker dosyası, projenizdeki index.html adlı HTML dosyasını, Nginx sunucusunun içindeki varsayılan kök dizinine (/usr/share/nginx/html/) kopyalar. Bu sayede, Nginx sunucusu bu HTML dosyasını sunarak web içeriğini sağlar.
+
+Port 80'in Açılması:  Docker dosyası, Nginx sunucusunun dış dünyadan erişilebilir olması için port 80'i dışa açar (EXPOSE 80). Bu, Docker konteynerinin dış ağ üzerinden HTTP isteklerini almasını sağlar.
+
+#### Dockerfile İçeriği :
+
+```
+#Use Nginx base image
+FROM nginx:alpine
+
+#Copy your HTML file into the Nginx server
+COPY index.html /usr/share/nginx/html/
+
+#Expose port 80 to allow external access
+EXPOSE 80
+```
 
 ### Jenkins Kurulumu ve CI/CD Pipeline'ları Oluşturma
 Bu adımlar, Jenkins'in kurulumunu ve ardından CI/CD pipeline'larının oluşturulmasını içerir.
