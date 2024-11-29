@@ -10,5 +10,5 @@ sudo systemctl enable jenkins
 sudo systemctl start jenkins
 sudo systemctl status jenkins
 sudo cat /var/lib/jenkins/secrets/initialAdminPassword
-# "http://[ec2-public-dns-name]:8080"connect to Jenkinsserver1 #
+# "http://[ec2-public-dns-name]:8080"connect to Jenkinsserver #
 
